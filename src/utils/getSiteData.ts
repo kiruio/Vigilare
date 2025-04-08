@@ -9,6 +9,8 @@ interface MonitorData {
   id: string;
   friendly_name: string;
   url: string;
+  type: number;
+  interval: number;
   status: number;
   logs: any[];
   custom_uptime_ranges: string;
@@ -18,6 +20,8 @@ interface ProcessedData {
   id: string;
   name: string;
   url: string;
+  type: number;
+  interval:number;
   average: string;
   daily: any[];
   total: any;
@@ -129,6 +133,8 @@ const dataProcessing = (data: any, dates: any) => {
     const result = {
       id: monitor.id,
       name: monitor.friendly_name,
+      type: monitor.type,
+      interval: monitor.interval,
       url: monitor.url,
       average: average,
       daily: daily,

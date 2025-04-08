@@ -26,6 +26,17 @@ export const formatDuration = (seconds: number) => {
 };
 
 /**
+ * 把秒数转为 分
+ * @param {number} seconds - 持续时间（秒）
+ * @returns {string} - 格式化后的持续时间字符串
+ */
+export const formatDurationToMinute = (seconds: number) => {
+  const m = Math.floor(seconds / 60);
+
+  return `${m}m`;
+};
+
+/**
  * 格式化时间戳，返回年月日时分秒字符串
  * @param {number} timestamp - 要格式化的时间戳
  * @returns {string} - 格式化后的年月日时分秒字符串

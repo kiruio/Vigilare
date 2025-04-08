@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { SwitchTransition, CSSTransition } from "react-transition-group";
-import { formatNumber, formatDuration } from "../utils/timeTools";
+import { formatNumber, formatDuration, formatDurationToMinute } from "../utils/timeTools";
 import { LinkTwo } from "@icon-park/react";
 import Tooltip from "antd/es/tooltip";
 import "antd/es/tooltip/style";
@@ -10,6 +10,8 @@ import Result from "antd/es/result";
 import "antd/es/result/style";
 import Modal from "antd/es/modal";
 import "antd/es/modal/style";
+import Tag from "antd/es/tag";
+import "antd/es/tag/style";
 import CustomLink from "../components/customLink";
 import SiteCharts from "../components/siteCharts";
 import { useStatusStore } from "../stores/status";
@@ -18,6 +20,14 @@ const SiteStatus = ({ siteData, days }: { siteData: any; days: number }) => {
   const { siteState } = useStatusStore();
   const [siteDetailsShow, setSiteDetailsShow] = useState<boolean>(false);
   const [siteDetailsData, setSiteDetailsData] = useState<any>(null);
+
+  const siteTypeMap: Record<number, { tag: string; text: string; }> = {
+    1: { tag: "HTTP", text: "发送 HTTP(S) 请求获取目标服务可用性" },
+    2: { tag: "KEYWORD", text: "发送 HTTP(S) 请求并检查响应内容中是否包含指定关键词" },
+    3: { tag: "PING", text: "发送 ICMP Echo 请求获取目标服务可用性" },
+    4: { tag: "PORT", text: "检查目标服务端口是否开放" },
+    5: { tag: "HEARTBEAT", text: "由被监控的服务主动发送心跳包获知其可用性" }
+  }
 
   // 开启弹窗
   const showSiteDetails = (data: any) => {
@@ -49,6 +59,12 @@ const SiteStatus = ({ siteData, days }: { siteData: any; days: number }) => {
                 >
                   <div className="meta">
                     <div className="name">{site.name}</div>
+                    <Tag
+                      style={{ marginLeft: 8, fontSize: 10 }}
+                    >
+                      {siteTypeMap[site.type]?.tag || '未知'}
+                      /{formatDurationToMinute(site.interval)}
+                    </Tag>
                     <CustomLink iconDom={<LinkTwo />} to={site.url} />
                     <div
                       className={`status ${
