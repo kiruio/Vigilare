@@ -1,4 +1,4 @@
-import axios from "axios";
+import DownIcon from "../assets/favicon-down.ico";
 import dayjs from "dayjs";
 import { useCacheStore } from "../stores/cache";
 import { useStatusStore } from "../stores/status";
@@ -156,7 +156,7 @@ const updateSiteStatus = (data: ProcessedData[]) => {
     // 更新favicon
     const favicon = document.querySelector<HTMLLinkElement>('link[rel="shortcut icon"]');
     if (favicon) {
-      favicon.href = isAllOk ? "./images/favicon.ico" : "./images/favicon-down.ico";
+      favicon.href = isAllOk ? "favicon.ico" : DownIcon;
     }
 
     // 更新全局状态
