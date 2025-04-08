@@ -1,6 +1,6 @@
 {
   "name": "vigilare",
-  "version": "0.5.0",
+  "version": "0.7.0",
   "type": "module",
   "scripts": {
     "build": "tsc && vite build",
