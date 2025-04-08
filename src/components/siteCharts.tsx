@@ -1,7 +1,16 @@
 import { Alert } from "antd";
 import { Line, LineConfig } from "@ant-design/plots";
 
-const SiteCharts = ({ siteDetails }: { siteDetails: any }) => {
+interface SiteDetails {
+  status: string;
+  average: number;
+  daily: Array<{
+    uptime: number;
+    date: any;
+  }>;
+}
+
+const SiteCharts = ({ siteDetails }: { siteDetails: SiteDetails }) => {
   // 处理传入数据为图表
   const dailyData = siteDetails.daily;
   const chartData = [...dailyData].reverse().map((data) => {
@@ -41,7 +50,7 @@ const SiteCharts = ({ siteDetails }: { siteDetails: any }) => {
           />
         ) : (
           <Alert
-            message="当前站点持续异常，请立即检查站点状态或从监控项目中删除"
+            message="当前站点持续异常，请立即处理"
             type="error"
             showIcon
           />

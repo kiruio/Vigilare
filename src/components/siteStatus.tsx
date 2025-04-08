@@ -5,9 +5,10 @@ import { LinkTwo } from "@icon-park/react";
 import { Tooltip, Button, Result, Modal } from "antd";
 import CustomLink from "../components/customLink";
 import SiteCharts from "../components/siteCharts";
+import { useStatusStore } from "../stores/status";
 
-const SiteStatus = ({ siteData, days, status }: { siteData: any; days: number; status: any }) => {
-  // 弹窗数据
+const SiteStatus = ({ siteData, days }: { siteData: any; days: number }) => {
+  const { siteState } = useStatusStore();
   const [siteDetailsShow, setSiteDetailsShow] = useState<boolean>(false);
   const [siteDetailsData, setSiteDetailsData] = useState<any>(null);
 
@@ -25,9 +26,9 @@ const SiteStatus = ({ siteData, days, status }: { siteData: any; days: number; s
 
   return (
     <SwitchTransition mode="out-in">
-      <CSSTransition key={status.siteState} classNames="fade" timeout={100}>
-        {status.siteState !== "wrong" ? (
-          status.siteState !== "loading" && siteData ? (
+      <CSSTransition key={siteState} classNames="fade" timeout={100}>
+        {siteState !== "wrong" ? (
+          siteState !== "loading" && siteData ? (
             <div className="sites">
               {siteData.map((site: any) => (
                 <div
@@ -127,7 +128,7 @@ const SiteStatus = ({ siteData, days, status }: { siteData: any; days: number; s
         ) : (
           <Result
             status="error"
-            title="调用超限或请求错误，请刷新后重试"
+            title="出错啦, 待会再试试吧（；´д｀）ゞ"
             extra={
               <Button
                 type="primary"

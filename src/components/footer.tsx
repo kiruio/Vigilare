@@ -13,11 +13,8 @@ const Footer = () => {
     <footer id="footer">
       <div className="text">
         <p>
-        Upzilla v&nbsp;{Package.version}
-        </p>
-        <p>
-          基于&nbsp;
-          <CustomLink to="https://uptimerobot.com/" text="UptimeRobot" />
+        <CustomLink to="https://github.com/bilirumble/upzilla" text="Upzilla" />&nbsp;v&nbsp;{Package.version},&nbsp;Based on&nbsp;
+        <CustomLink to="https://uptimerobot.com/" text="UptimeRobot" />
         </p>
         <p>
           Copyright&nbsp;&copy;&nbsp;{copyry}&nbsp;-&nbsp;{new Date().getFullYear()}

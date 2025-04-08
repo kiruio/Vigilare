@@ -1,19 +1,19 @@
-import { makeAutoObservable } from "mobx";
+import { create } from 'zustand'
 
-class Status {
-  siteState = "loading";
-  siteOverview: any = null;
-
-  constructor() {
-    makeAutoObservable(this);
-  }
-
-  changeSiteState(val: any) {
-    this.siteState = val;
-  }
-  changeSiteOverview(val: any) {
-    this.siteOverview = val;
-  }
+export interface StatusState {
+  siteState: 'loading' | 'error' | 'allError' | 'normal' | 'wrong';
+  siteOverview: {
+    count: number;
+    okCount: number;
+    downCount: number;
+  } | null;
+  changeSiteState: (val: StatusState['siteState']) => void;
+  changeSiteOverview: (val: StatusState['siteOverview']) => void;
 }
 
-export default Status;
+export const useStatusStore = create<StatusState>((set) => ({
+  siteState: 'loading',
+  siteOverview: null,
+  changeSiteState: (val) => set({ siteState: val }),
+  changeSiteOverview: (val) => set({ siteOverview: val }),
+}))

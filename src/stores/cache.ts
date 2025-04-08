@@ -1,31 +1,26 @@
-import { makeAutoObservable } from "mobx";
-import { makePersistable, isHydrated } from "mobx-persist-store";
+import { create } from 'zustand'
+import { persist } from 'zustand/middleware'
 
-class Cache {
-  // 站点数据
-  siteData: any = null;
-
-  constructor() {
-    makeAutoObservable(this);
-    makePersistable(this, {
-      name: "siteDataCache",
-      properties: ["siteData"],
-      storage: window.localStorage,
-      stringify: true, // 将数据转换为 JSON 字符串格式
-    });
-  }
-
-  changeSiteData(val: any) {
-    this.siteData = val;
-  }
-
-  removeSiteData() {
-    this.siteData = null;
-  }
-
-  get isHydrated() {
-    return isHydrated(this);
-  }
+interface CacheState {
+  siteData: any
+  changeSiteData: (val: any) => void
+  removeSiteData: () => void
 }
 
-export default Cache;
+export const useCacheStore = create<CacheState>()(
+  persist(
+    (set) => ({
+      siteData: null,
+      changeSiteData: (val) => set({ siteData: val }),
+      removeSiteData: () => set({ siteData: null }),
+    }),
+    {
+      name: 'siteDataCache',
+      storage: {
+        getItem: (name) => JSON.parse(localStorage.getItem(name)!),
+        setItem: (name, value) => localStorage.setItem(name, JSON.stringify(value)),
+        removeItem: (name) => localStorage.removeItem(name),
+      },
+    }
+  )
+)

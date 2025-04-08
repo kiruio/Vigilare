@@ -1,24 +1,20 @@
 import { useState, useEffect } from "react";
-import { observer } from "mobx-react-lite";
-import useStores from "./hooks/useStores";
 import { getSiteData } from "./utils/getSiteData";
 import Header from "./components/header";
 import SiteStatus from "./components/siteStatus";
 import Footer from "./components/footer";
+import { useCacheStore } from "./stores/cache";
+import { useStatusStore } from "./stores/status";
 
-const App = observer(() => {
-  const { cache, status } = useStores();
+const App = () => {
   const [siteData, setSiteData] = useState<any>(null);
-
-  // 加载配置
   const apiKey = import.meta.env.VITE_API_KEY;
   const countDays = import.meta.env.VITE_COUNT_DAYS;
 
-  // 获取站点数据
   const getSiteStatusData = () => {
     setSiteData(null);
-    getSiteData(apiKey, countDays, cache, status).then((res) => {
-      console.log(res);
+    // 虽然处理方法有点离谱，但是我还是这么做了(⊙x⊙;) 能跑就行，以后再改（；´д｀）ゞ
+    getSiteData(apiKey, countDays, useCacheStore.getState(), useStatusStore.getState()).then((res) => {
       setSiteData(res);
     });
   };
@@ -33,13 +29,13 @@ const App = observer(() => {
       <main id="main">
         <div className="container">
           <div className="all-site">
-            <SiteStatus siteData={siteData} days={countDays} status={status} />
+            <SiteStatus siteData={siteData} days={countDays} />
           </div>
         </div>
       </main>
       <Footer />
     </>
   );
-});
+};
 
 export default App;
