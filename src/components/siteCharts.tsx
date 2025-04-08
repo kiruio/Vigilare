@@ -1,5 +1,5 @@
 import { Alert } from "antd";
-import { Line, LineConfig } from "@ant-design/plots";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 interface SiteDetails {
   status: string;
@@ -20,24 +20,6 @@ const SiteCharts = ({ siteDetails }: { siteDetails: SiteDetails }) => {
       value: uptime,
     };
   });
-
-  // 图标配置
-  const chartConfig: LineConfig = {
-    data: chartData,
-    padding: "auto",
-    xField: "time",
-    yField: "value",
-    meta: {
-      value: {
-        alias: "当日可用率",
-        formatter: (v: number) => `${v}%`,
-      },
-    },
-    xAxis: {
-      tickCount: chartData.length,
-    },
-    smooth: true,
-  };
 
   return (
     <div className="site-details">
@@ -62,8 +44,33 @@ const SiteCharts = ({ siteDetails }: { siteDetails: SiteDetails }) => {
           showIcon
         />
       )}
-      <div className="all">
-        <Line {...chartConfig} />
+      <div className="all" style={{ height: 400 }}>
+        <ResponsiveContainer width="100%" height="100%">
+          <LineChart data={chartData}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis 
+              dataKey="time" 
+              tick={{ fontSize: 12 }}
+              tickCount={chartData.length}
+            />
+            <YAxis
+              tickFormatter={(v) => `${v}%`}
+              domain={[0, 100]}
+            />
+            <Tooltip 
+              formatter={(value) => [`${value}%`, '可用率']}
+              labelFormatter={(label) => `日期: ${label}`}
+            />
+            <Line
+              type="monotone"
+              dataKey="value"
+              stroke="#1890ff"
+              strokeWidth={2}
+              dot={{ fill: '#1890ff' }}
+              activeDot={{ r: 6 }}
+            />
+          </LineChart>
+        </ResponsiveContainer>
       </div>
     </div>
   );

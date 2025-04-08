@@ -11,7 +11,6 @@ const App = () => {
 
   const getSiteStatusData = () => {
     setSiteData(null);
-    // 虽然处理方法有点离谱，但是我还是这么做了(⊙x⊙;) 能跑就行，以后再改（；´д｀）ゞ
     getSiteData(apiKey, countDays).then((res) => {
       setSiteData(res);
     });

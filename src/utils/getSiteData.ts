@@ -26,7 +26,7 @@ interface ProcessedData {
 
 export const getSiteData = async (apikey: string, days: number) => {
   const { changeSiteData, siteData } = useCacheStore.getState();
-  const { changeSiteState, changeSiteOverview } = useStatusStore.getState();
+  const { changeSiteState } = useStatusStore.getState();
 
   try {
     changeSiteState("loading");
@@ -54,7 +54,7 @@ export const getSiteData = async (apikey: string, days: number) => {
     }
 
     // API请求
-    const response = await axios.post(import.meta.env.VITE_GLOBAL_API, {
+    const response = await getMonitorsData({
       api_key: apikey,
       format: "json",
       logs: 1,
@@ -62,17 +62,17 @@ export const getSiteData = async (apikey: string, days: number) => {
       logs_start_date: start,
       logs_end_date: end,
       custom_uptime_ranges: ranges.join("-"),
-    }, { timeout: 10000 });
+    });
 
     // 更新缓存
-    if (response.data?.monitors) {
+    if (response?.monitors) {
       changeSiteData({
-        data: response.data.monitors,
+        data: response.monitors,
         timestamp: Date.now()
       });
     }
 
-    const processed = dataProcessing(response.data.monitors, dates);
+    const processed = dataProcessing(response.monitors, dates);
     updateSiteStatus(processed);
     return processed;
   } catch (error) {
@@ -82,42 +82,65 @@ export const getSiteData = async (apikey: string, days: number) => {
   }
 };
 
-const dataProcessing = (monitors: MonitorData[], dates: dayjs.Dayjs[]): ProcessedData[] => {
-  return monitors?.map(monitor => {
+/**
+ * 对监控数据进行处理
+ * @param {Array} data - 监控数据
+ * @param {Array} dates - 日期数组
+ * @returns {Array} - 处理后的数据
+ */
+const dataProcessing = (data: any, dates: any) => {
+  return data?.map((monitor: any) => {
     const ranges = monitor.custom_uptime_ranges.split("-");
-    const average = formatNumber(parseFloat(ranges.pop() || "0"));
-    const dailyMap = new Map<string, number>();
+    const average = formatNumber(ranges.pop());
+    const daily: any[] = [];
+    const map: any[] = [];
 
-    const daily = dates.map(date => ({
-      date,
-      uptime: formatNumber(parseFloat(ranges[dates.length - 1 - date.diff(dates[0], 'day')] || "0")),
-      down: { times: 0, duration: 0 }
-    }));
+    dates.forEach((date: any, index: number) => {
+      map[date.format("YYYYMMDD")] = index;
+      daily[index] = {
+        date: date,
+        uptime: formatNumber(ranges[index]),
+        down: { times: 0, duration: 0 },
+      };
+    });
 
-    const total = monitor.logs.reduce((acc, log) => {
+    /**
+     * 统计总故障次数和累计故障时长
+     * @param {Object} total - 初始总数
+     * @param {Object} log - 日志数据
+     * @returns {Object} - 更新后的总数
+     */
+    const calculateTotal = (total: any, log: any) => {
       if (log.type === 1) {
-        const dateKey = dayjs.unix(log.datetime).format("YYYYMMDD");
-        const index = dates.findIndex(d => d.format("YYYYMMDD") === dateKey);
-        if (index >= 0) {
-          daily[index].down.times += 1;
-          daily[index].down.duration += log.duration;
-          acc.times += 1;
-          acc.duration += log.duration;
-        }
+        const date: any = dayjs.unix(log.datetime).format("YYYYMMDD");
+        total.duration += log.duration;
+        total.times += 1;
+        daily[map[date]].down.duration += log.duration;
+        daily[map[date]].down.times += 1;
       }
-      return acc;
-    }, { times: 0, duration: 0 });
+      return total;
+    };
 
-    return {
+    const total = monitor.logs.reduce(calculateTotal, {
+      times: 0,
+      duration: 0,
+    });
+
+    const result = {
       id: monitor.id,
       name: monitor.friendly_name,
       url: monitor.url,
-      average,
-      daily,
-      total,
-      status: monitor.status === 2 ? "ok" : monitor.status === 9 ? "down" : "unknown"
+      average: average,
+      daily: daily,
+      total: total,
+      status: "unknown",
     };
-  }) || [];
+
+    if (monitor.status === 2) result.status = "ok";
+    if (monitor.status === 9) result.status = "down";
+
+    return result;
+  });
 };
 
 // 状态更新函数
@@ -150,5 +173,26 @@ const updateSiteStatus = (data: ProcessedData[]) => {
   } catch (error) {
     console.error("状态更新失败:", error);
     changeSiteState("error");
+  }
+};
+
+const getMonitorsData = async (postdata: any) => {
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000);
+
+    const response = await fetch(import.meta.env.VITE_GLOBAL_API, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(postdata),
+      signal: controller.signal
+    });
+    
+    clearTimeout(timeoutId);
+
+    if (!response.ok) throw new Error(`Bad response from server: ${response.status}`);
+    return await response.json();
+  } catch (error) {
+    throw error;
   }
 };
