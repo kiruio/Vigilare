@@ -58,6 +58,13 @@ export default ({ mode }) =>
         "@": "/src",
       },
     },
+    css: {
+      preprocessorOptions: {
+        less: {
+          javascriptEnabled: true,
+        },
+      },
+    },
     build: {
       minify: "terser",
       terserOptions: {

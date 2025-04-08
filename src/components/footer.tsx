@@ -1,5 +1,5 @@
 import React from "react";
-import CustomLink from "@/components/customLink";
+import CustomLink from "../components/customLink";
 import Package from "../../package.json";
 
 const Footer = () => {
@@ -13,12 +13,11 @@ const Footer = () => {
     <footer id="footer">
       <div className="text">
         <p>
-          Version&nbsp;{Package.version}
+        Upzilla v&nbsp;{Package.version}
         </p>
         <p>
           基于&nbsp;
           <CustomLink to="https://uptimerobot.com/" text="UptimeRobot" />
-          &nbsp;接口&nbsp;|&nbsp;检测频率 5 分钟
         </p>
         <p>
           Copyright&nbsp;&copy;&nbsp;{copyry}&nbsp;-&nbsp;{new Date().getFullYear()}

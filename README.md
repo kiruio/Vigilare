@@ -1,29 +1,27 @@
-# uptime-page
-
-一个基于 UptimeRobot API 的在线状态面板
+# Upzilla
+简洁的UptimeRobot页面
 
 ## 部署
-
 ### 安装依赖
 
 ```bash
-# 若没有 yarn
-npm install yarn -g
+# 若没有 pnpm
+npm install pnpm -g
 
 # 安装依赖
-yarn install
+pnpm i
 ```
 
 ### 开发
 
 ```bash
-yarn dev
+pnpm dev
 ```
 
 ### 构建
 
 ```bash
-yarn build
+pnpm build
 ```
 
 构建后的文件会存储于 dist 目录中。
@@ -38,5 +36,4 @@ yarn build
 - 将所有文件上传到网站空间
 
 ## 鸣谢
-
  - [site-status](https://github.com/imsyy/site-status) 基于此项目进行修改

@@ -3,7 +3,7 @@ import { makePersistable, isHydrated } from "mobx-persist-store";
 
 class Cache {
   // 站点数据
-  siteData = null;
+  siteData: any = null;
 
   constructor() {
     makeAutoObservable(this);
@@ -15,7 +15,7 @@ class Cache {
     });
   }
 
-  changeSiteData(val) {
+  changeSiteData(val: any) {
     this.siteData = val;
   }
 

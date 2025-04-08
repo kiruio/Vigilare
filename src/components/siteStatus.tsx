@@ -1,18 +1,18 @@
 import { useState } from "react";
 import { SwitchTransition, CSSTransition } from "react-transition-group";
-import { formatNumber, formatDuration } from "@/utils/timeTools";
+import { formatNumber, formatDuration } from "../utils/timeTools";
 import { LinkTwo } from "@icon-park/react";
 import { Tooltip, Button, Result, Modal } from "antd";
-import CustomLink from "@/components/customLink";
-import SiteCharts from "@/components/siteCharts";
+import CustomLink from "../components/customLink";
+import SiteCharts from "../components/siteCharts";
 
-const SiteStatus = ({ siteData, days, status }) => {
+const SiteStatus = ({ siteData, days, status }: { siteData: any; days: number; status: any }) => {
   // 弹窗数据
-  const [siteDetailsShow, setSiteDetailsShow] = useState(false);
-  const [siteDetailsData, setSiteDetailsData] = useState(null);
+  const [siteDetailsShow, setSiteDetailsShow] = useState<boolean>(false);
+  const [siteDetailsData, setSiteDetailsData] = useState<any>(null);
 
   // 开启弹窗
-  const showSiteDetails = (data) => {
+  const showSiteDetails = (data: any) => {
     setSiteDetailsShow(true);
     setSiteDetailsData(data);
   };
@@ -29,7 +29,7 @@ const SiteStatus = ({ siteData, days, status }) => {
         {status.siteState !== "wrong" ? (
           status.siteState !== "loading" && siteData ? (
             <div className="sites">
-              {siteData.map((site) => (
+              {siteData.map((site: any) => (
                 <div
                   key={site.id}
                   className={`site ${
@@ -54,7 +54,7 @@ const SiteStatus = ({ siteData, days, status }) => {
                     </div>
                   </div>
                   <div className="timeline">
-                    {site.daily.map((data, index) => {
+                    {site.daily.map((data: any, index: number) => {
                       const { uptime, down, date } = data;
                       const time = date.format("YYYY-MM-DD");
                       let status = null;

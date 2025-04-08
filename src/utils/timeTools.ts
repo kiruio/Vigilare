@@ -3,7 +3,7 @@
  * @param {number} value - 要格式化的数字
  * @returns {string} - 格式化后的字符串
  */
-export const formatNumber = (value) => {
+export const formatNumber = (value: number) => {
   return (Math.floor(value * 100) / 100).toString();
 };
 
@@ -12,7 +12,7 @@ export const formatNumber = (value) => {
  * @param {number} seconds - 持续时间（秒）
  * @returns {string} - 格式化后的持续时间字符串
  */
-export const formatDuration = (seconds) => {
+export const formatDuration = (seconds: number) => {
   const h = Math.floor(seconds / 3600);
   const m = Math.floor((seconds % 3600) / 60);
   const s = seconds % 60;
@@ -30,7 +30,7 @@ export const formatDuration = (seconds) => {
  * @param {number} timestamp - 要格式化的时间戳
  * @returns {string} - 格式化后的年月日时分秒字符串
  */
-export const formatTimestamp = (timestamp) => {
+export const formatTimestamp = (timestamp: number) => {
   const date = new Date(timestamp);
 
   // 获取年、月、日、小时、分钟、秒

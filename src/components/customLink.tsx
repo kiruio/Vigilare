@@ -1,5 +1,5 @@
 // 超链接组件
-const CustomLink = (props) => {
+const CustomLink = (props: any) => {
   const { text, to, iconDom } = props;
 
   // 检查链接

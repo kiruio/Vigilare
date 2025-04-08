@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { observer } from "mobx-react-lite";
 import { CSSTransition, SwitchTransition } from "react-transition-group";
-import { formatTimestamp } from "@/utils/timeTools";
 import { Refresh } from "@icon-park/react";
 import { message } from "antd";
 import CountUp from "react-countup";
-import useStores from "@/hooks/useStores";
+import useStores from "../hooks/useStores";
+import { formatTimestamp } from "../utils/timeTools";
 
-const Header = observer(({ getSiteData }) => {
+const Header = observer(({ getSiteData }: { getSiteData: () => void }) => {
   const [messageApi, contextHolder] = message.useMessage();
   const { status, cache } = useStores();
   const [lastClickTime, setLastClickTime] = useState(0);
@@ -16,7 +16,7 @@ const Header = observer(({ getSiteData }) => {
   const siteName = import.meta.env.VITE_SITE_NAME;
 
   // 状态文本
-  const statusNames = {
+  const statusNames: Record<string, string> = {
     loading: "站点状态加载中",
     error: "部分站点出现异常",
     allError: "全部站点出现异常",

@@ -1,15 +1,14 @@
 import { useState, useEffect } from "react";
 import { observer } from "mobx-react-lite";
-import { getSiteData } from "@/utils/getSiteData";
-import { GlobalScrollbar } from "mac-scrollbar";
-import useStores from "@/hooks/useStores";
-import Header from "@/components/header";
-import SiteStatus from "@/components/siteStatus";
-import Footer from "@/components/footer";
+import useStores from "./hooks/useStores";
+import { getSiteData } from "./utils/getSiteData";
+import Header from "./components/header";
+import SiteStatus from "./components/siteStatus";
+import Footer from "./components/footer";
 
 const App = observer(() => {
   const { cache, status } = useStores();
-  const [siteData, setSiteData] = useState(null);
+  const [siteData, setSiteData] = useState<any>(null);
 
   // 加载配置
   const apiKey = import.meta.env.VITE_API_KEY;
@@ -30,7 +29,6 @@ const App = observer(() => {
 
   return (
     <>
-      <GlobalScrollbar />
       <Header getSiteData={getSiteStatusData} />
       <main id="main">
         <div className="container">
