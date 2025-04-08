@@ -2,7 +2,6 @@ import { useState } from "react";
 import { CSSTransition, SwitchTransition } from "react-transition-group";
 import { Refresh } from "@icon-park/react";
 import { message } from "antd";
-import CountUp from "react-countup";
 import { useStatusStore } from "../stores/status";
 import { useCacheStore } from "../stores/cache";
 import { formatTimestamp } from "../utils/timeTools";
@@ -103,29 +102,21 @@ const Header = ({ getSiteData }: { getSiteData: () => void }) => {
                 <div className="overview">
                   <div className="count">
                     <span className="name">站点总数</span>
-                    <CountUp
-                      className="num"
-                      end={siteOverview.count}
-                      duration={1}
-                    />
+                    <span
+                      className="num">{siteOverview.count}</span>
                   </div>
                   <div className="status-num">
                     <div className="ok-count">
                       <span className="name">正常</span>
-                      <CountUp
-                        className="num"
-                        end={siteOverview.okCount}
-                        duration={1}
-                      />
+                      <span
+                        className="num">{siteOverview.okCount}</span>
                     </div>
                     <div className="down-count">
                       <span className="name">异常</span>
                       <span className="num">
-                        <CountUp
+                        <span
                           className="num"
-                          end={siteOverview.downCount}
-                          duration={1}
-                        />
+                          >{siteOverview.downCount}</span>
                       </span>
                     </div>
                   </div>

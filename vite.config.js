@@ -36,7 +36,7 @@ export default ({ mode }) =>
         manifest: {
           name: loadEnv(mode, process.cwd()).VITE_SITE_NAME,
           short_name: loadEnv(mode, process.cwd()).VITE_SITE_NAME,
-          description: "uptime page 站点监测",
+          description: "Vigilare 站点监测",
           display: "standalone",
           start_url: "/",
           theme_color: "#fff",

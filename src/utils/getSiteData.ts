@@ -1,63 +1,60 @@
-import { formatNumber } from "./timeTools";
 import axios from "axios";
 import dayjs from "dayjs";
+import { useCacheStore } from "../stores/cache";
+import { useStatusStore } from "../stores/status";
+import { formatNumber } from "./timeTools";
 
-/**
- * 获取监控数据
- * @param {string} apikey - UptimeRobot的API密钥
- * @param {number} days - 获取的天数
- * @param {Object} cache - mobx-cache
- * @param {Object} status - mobx-status
- * @returns {Promise<Array>} - 处理后的监控数据
- */
-export const getSiteData = async (apikey: string, days: number, cache: any, status: any) => {
+// 定义类型
+interface MonitorData {
+  id: string;
+  friendly_name: string;
+  url: string;
+  status: number;
+  logs: any[];
+  custom_uptime_ranges: string;
+}
+
+interface ProcessedData {
+  id: string;
+  name: string;
+  url: string;
+  average: string;
+  daily: any[];
+  total: any;
+  status: string;
+}
+
+export const getSiteData = async (apikey: string, days: number) => {
+  const { changeSiteData, siteData } = useCacheStore.getState();
+  const { changeSiteState, changeSiteOverview } = useStatusStore.getState();
+
   try {
-    status.changeSiteState("loading");
+    changeSiteState("loading");
     
-    const dates: any[] = [];
-    const today = dayjs(new Date().setHours(0, 0, 0, 0));
-
-    // 生成日期范围数组
-    for (let d = 0; d < days; d++) {
-      dates.push(today.subtract(d, "day"));
-    }
-
-    console.debug(today);
-    console.debug("获取数据的天数：", days);
-    console.debug("日期范围：", dates);
-
-    // 生成自定义历史数据范围
-    const ranges = dates.map(
-      (date) => `${date.unix()}_${date.add(1, "day").unix()}`
+    const dates = Array.from({ length: days }, (_, d) => 
+      dayjs().startOf('day').subtract(d, "day")
     );
-    const start = dates[dates.length - 1].unix();
-    const end = dates[0].add(1, "day").unix();
+
+    const ranges = dates.map(date => 
+      `${date.unix()}_${date.add(1, "day").unix()}`
+    );
+    const [start, end] = [dates[dates.length - 1].unix(), dates[0].add(1, "day").unix()];
     ranges.push(`${start}_${end}`);
 
-    // 缓存的有效期（秒）
-    const cacheDuration = 60;
-
-    // 检查是否有可用缓存数据
-    if (cache.siteData !== null) {
-      const { data, timestamp } = cache.siteData;
-      // 当前时间
-      const currentTime = new Date().getTime();
-      // 检查缓存是否在有效期内
-      if (currentTime - timestamp < cacheDuration * 1000) {
-        return new Promise((resolve) => {
-          const delay = Math.floor(Math.random() * (1200 - 500 + 1)) + 500;
-          setTimeout(() => {
-            const processedData = dataProcessing(data, dates);
-            console.log("触发缓存");
-            changeSite(processedData, status);
-            resolve(processedData);
-          }, delay);
-        });
-      }
+    // 缓存检查逻辑
+    const cacheDuration = 60 * 1000; // 60秒
+    if (siteData?.data && Date.now() - siteData.timestamp < cacheDuration) {
+      return new Promise<ProcessedData[]>((resolve) => {
+        setTimeout(() => {
+          const processed = dataProcessing(siteData.data, dates);
+          updateSiteStatus(processed);
+          resolve(processed);
+        }, Math.random() * 700 + 500);
+      });
     }
 
-    // 准备请求数据的参数
-    const postdata = {
+    // API请求
+    const response = await axios.post(import.meta.env.VITE_GLOBAL_API, {
       api_key: apikey,
       format: "json",
       logs: 1,
@@ -65,145 +62,93 @@ export const getSiteData = async (apikey: string, days: number, cache: any, stat
       logs_start_date: start,
       logs_end_date: end,
       custom_uptime_ranges: ranges.join("-"),
-    };
+    }, { timeout: 10000 });
 
-    // 发送获取监控数据的请求
-    const response = await getMonitorsData(postdata, status);
-
-    // 储存数据到缓存
-    if (response.monitors) {
-      const monitorsCache = {
-        data: response.monitors,
-        timestamp: new Date().getTime(),
-      };
-      cache.changeSiteData(monitorsCache);
+    // 更新缓存
+    if (response.data?.monitors) {
+      changeSiteData({
+        data: response.data.monitors,
+        timestamp: Date.now()
+      });
     }
 
-    // 处理监控数据
-    const processedData = dataProcessing(response.monitors, dates);
-    // 更新站点数据
-    changeSite(processedData, status);
-    return processedData;
+    const processed = dataProcessing(response.data.monitors, dates);
+    updateSiteStatus(processed);
+    return processed;
   } catch (error) {
-    status.changeSiteState("wrong");
-    console.error("获取监控数据时出错：" + error);
+    console.error("获取数据失败:", error);
+    changeSiteState("wrong");
+    throw error;
   }
 };
 
-/**
- * 发送获取监控数据的请求
- * @param {Object} data - 请求数据
- * @returns {Promise<Object>} - 监控数据的响应
- */
-const getMonitorsData = async (postdata: any, status: any) => {
-  try {
-    const globalApi = import.meta.env.VITE_GLOBAL_API;
-    const response = await axios.post(globalApi, postdata, { timeout: 10000 });
-    return response.data;
-  } catch (error) {
-    console.error("获取监控数据时出错：", error);
-    status.changeSiteState("wrong");
-  }
-};
-
-/**
- * 对监控数据进行处理
- * @param {Array} data - 监控数据
- * @param {Array} dates - 日期数组
- * @returns {Array} - 处理后的数据
- */
-const dataProcessing = (data: any, dates: any) => {
-  return data?.map((monitor: any) => {
+const dataProcessing = (monitors: MonitorData[], dates: dayjs.Dayjs[]): ProcessedData[] => {
+  return monitors?.map(monitor => {
     const ranges = monitor.custom_uptime_ranges.split("-");
-    const average = formatNumber(ranges.pop());
-    const daily: any[] = [];
-    const map: any[] = [];
+    const average = formatNumber(parseFloat(ranges.pop() || "0"));
+    const dailyMap = new Map<string, number>();
 
-    dates.forEach((date: any, index: number) => {
-      map[date.format("YYYYMMDD")] = index;
-      daily[index] = {
-        date: date,
-        uptime: formatNumber(ranges[index]),
-        down: { times: 0, duration: 0 },
-      };
-    });
+    const daily = dates.map(date => ({
+      date,
+      uptime: formatNumber(parseFloat(ranges[dates.length - 1 - date.diff(dates[0], 'day')] || "0")),
+      down: { times: 0, duration: 0 }
+    }));
 
-    /**
-     * 统计总故障次数和累计故障时长
-     * @param {Object} total - 初始总数
-     * @param {Object} log - 日志数据
-     * @returns {Object} - 更新后的总数
-     */
-    const calculateTotal = (total: any, log: any) => {
+    const total = monitor.logs.reduce((acc, log) => {
       if (log.type === 1) {
-        const date: any = dayjs.unix(log.datetime).format("YYYYMMDD");
-        total.duration += log.duration;
-        total.times += 1;
-        daily[map[date]].down.duration += log.duration;
-        daily[map[date]].down.times += 1;
+        const dateKey = dayjs.unix(log.datetime).format("YYYYMMDD");
+        const index = dates.findIndex(d => d.format("YYYYMMDD") === dateKey);
+        if (index >= 0) {
+          daily[index].down.times += 1;
+          daily[index].down.duration += log.duration;
+          acc.times += 1;
+          acc.duration += log.duration;
+        }
       }
-      return total;
-    };
+      return acc;
+    }, { times: 0, duration: 0 });
 
-    const total = monitor.logs.reduce(calculateTotal, {
-      times: 0,
-      duration: 0,
-    });
-
-    const result = {
+    return {
       id: monitor.id,
       name: monitor.friendly_name,
       url: monitor.url,
-      average: average,
-      daily: daily,
-      total: total,
-      status: "unknown",
+      average,
+      daily,
+      total,
+      status: monitor.status === 2 ? "ok" : monitor.status === 9 ? "down" : "unknown"
     };
-
-    if (monitor.status === 2) result.status = "ok";
-    if (monitor.status === 9) result.status = "down";
-
-    return result;
-  });
+  }) || [];
 };
 
-/**
- * 更改站点状态
- * @param {Array} data - 站点数据
- * @param {Object} status - mobx-status
- */
-const changeSite = (data: any, status: any) => {
+// 状态更新函数
+const updateSiteStatus = (data: ProcessedData[]) => {
+  const { changeSiteState, changeSiteOverview } = useStatusStore.getState();
+  
   try {
-    // 统计数据
-    const isAllStatusOk = data.every((item: any) => item.status === "ok");
-    const isAnyStatusOk = data.some((item: any) => item.status === "ok");
-    const okCount = data.filter((item: any) => item.status === "ok").length;
-    const downCount = data.filter((item: any) => item.status === "down").length;
+    const okCount = data.filter(d => d.status === "ok").length;
+    const downCount = data.length - okCount;
+    const isAllOk = okCount === data.length;
+    const hasAnyOk = okCount > 0;
 
-    // 更改图标
-    const faviconLink: any = document.querySelector('link[rel="shortcut icon"]');
-    faviconLink.href = isAllStatusOk
-      ? "./images/favicon.ico"
-      : "./images/favicon-down.ico";
-
-    // 更改状态
-    if (isAllStatusOk) {
-      status.changeSiteState("normal");
-    } else if (isAnyStatusOk) {
-      status.changeSiteState("error");
-    } else {
-      status.changeSiteState("allError");
+    // 更新favicon
+    const favicon = document.querySelector<HTMLLinkElement>('link[rel="shortcut icon"]');
+    if (favicon) {
+      favicon.href = isAllOk ? "./images/favicon.ico" : "./images/favicon-down.ico";
     }
 
-    // 更新状态总览
-    status.changeSiteOverview({
+    // 更新全局状态
+    changeSiteState(
+      isAllOk ? "normal" : 
+      hasAnyOk ? "error" : "allError"
+    );
+    
+    changeSiteOverview({
       count: data.length,
       okCount,
-      downCount,
+      downCount
     });
   } catch (error) {
-    console.error("更改站点状态时发生错误：", error);
-    // 处理错误状态
-    status.changeSiteState("error");
+    console.error("状态更新失败:", error);
+    changeSiteState("error");
   }
 };
