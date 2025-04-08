@@ -70,8 +70,19 @@ export default ({ mode }) =>
       terserOptions: {
         compress: {
           pure_funcs: ["console.log"],
+          passes: 3 // 增加压缩次数
         },
       },
       sourcemap: false,
-    },
+      manualChunks(id) {
+        if (id.includes('node_modules')) {
+          // 精确分割大依赖
+          if (id.includes('/antd/')) return 'antd';
+          if (id.includes('/recharts/')) return 'recharts';
+          if (id.includes('/@icon-park/')) return 'icons';
+          if (id.includes('/dayjs/')) return 'dayjs';
+          return 'vendor';
+        }
+      }
+    }
   });

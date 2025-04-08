@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { CSSTransition, SwitchTransition } from "react-transition-group";
 import { Refresh } from "@icon-park/react";
-import { message } from "antd";
+import message from 'antd/es/message';
+import 'antd/es/message/style';
 import { useStatusStore } from "../stores/status";
 import { useCacheStore } from "../stores/cache";
 import { formatTimestamp } from "../utils/timeTools";

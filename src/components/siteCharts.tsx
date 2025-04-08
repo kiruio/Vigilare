@@ -1,5 +1,14 @@
-import { Alert } from "antd";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import Alert from "antd/es/alert";
+import "antd/es/alert/style";
+import { 
+  LineChart, 
+  Line, 
+  XAxis, 
+  YAxis, 
+  CartesianGrid, 
+  Tooltip, 
+  ResponsiveContainer 
+} from 'recharts';
 import dayjs from "dayjs";
 
 interface SiteDetails {

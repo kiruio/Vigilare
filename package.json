@@ -3,7 +3,7 @@
   "version": "0.7.0",
   "type": "module",
   "scripts": {
-    "build": "tsc && vite build",
+    "build": "vite build && tsc --emitDeclarationOnly",
     "dev": "vite",
     "lint": "eslint src --ext js,jsx,ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
