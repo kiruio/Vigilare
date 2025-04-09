@@ -4,7 +4,7 @@
  * @returns {string} - 格式化后的字符串
  */
 export const formatNumber = (value: number) => {
-  return (Math.floor(value * 100) / 100).toString();
+	return (Math.floor(value * 100) / 100).toString();
 };
 
 /**
@@ -13,16 +13,16 @@ export const formatNumber = (value: number) => {
  * @returns {string} - 格式化后的持续时间字符串
  */
 export const formatDuration = (seconds: number) => {
-  const h = Math.floor(seconds / 3600);
-  const m = Math.floor((seconds % 3600) / 60);
-  const s = seconds % 60;
+	const h = Math.floor(seconds / 3600);
+	const m = Math.floor((seconds % 3600) / 60);
+	const s = seconds % 60;
 
-  const parts = [];
-  if (h > 0) parts.push(`${h} 小时`);
-  if (m > 0) parts.push(`${m} 分`);
-  if (s > 0) parts.push(`${s} 秒`);
+	const parts = [];
+	if (h > 0) parts.push(`${h} 小时`);
+	if (m > 0) parts.push(`${m} 分`);
+	if (s > 0) parts.push(`${s} 秒`);
 
-  return parts.join(" ");
+	return parts.join(' ');
 };
 
 /**
@@ -31,9 +31,9 @@ export const formatDuration = (seconds: number) => {
  * @returns {string} - 格式化后的持续时间字符串
  */
 export const formatDurationToMinute = (seconds: number) => {
-  const m = Math.floor(seconds / 60);
+	const m = Math.floor(seconds / 60);
 
-  return `${m}m`;
+	return `${m}m`;
 };
 
 /**
@@ -42,26 +42,26 @@ export const formatDurationToMinute = (seconds: number) => {
  * @returns {string} - 格式化后的年月日时分秒字符串
  */
 export const formatTimestamp = (timestamp: number) => {
-  const date = new Date(timestamp);
+	const date = new Date(timestamp);
 
-  // 获取年、月、日、小时、分钟、秒
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-  const hours = String(date.getHours()).padStart(2, "0");
-  const minutes = String(date.getMinutes()).padStart(2, "0");
-  const seconds = String(date.getSeconds()).padStart(2, "0");
+	// 获取年、月、日、小时、分钟、秒
+	const year = date.getFullYear();
+	const month = String(date.getMonth() + 1).padStart(2, '0');
+	const day = String(date.getDate()).padStart(2, '0');
+	const hours = String(date.getHours()).padStart(2, '0');
+	const minutes = String(date.getMinutes()).padStart(2, '0');
+	const seconds = String(date.getSeconds()).padStart(2, '0');
 
-  // 拼接年月日时分秒
-  const timeData = {
-    year,
-    month,
-    day,
-    hours,
-    minutes,
-    seconds,
-    justTime: `${hours}:${minutes}:${seconds}`,
-  };
+	// 拼接年月日时分秒
+	const timeData = {
+		year,
+		month,
+		day,
+		hours,
+		minutes,
+		seconds,
+		justTime: `${hours}:${minutes}:${seconds}`,
+	};
 
-  return timeData;
+	return timeData;
 };

@@ -22,8 +22,8 @@ const App = () => {
 		<>
 			<Header getSiteData={getSiteStatusData} />
 			<main id="main">
-				<div className="container">
-					<div className="all-site">
+				<div className="p-20px translate-y--40px box-border max-w-980px px-20px py-0 mx-auto my-0">
+					<div className="flex items-center justify-center min-h-200px ovh-hidden bg-mainBackground rd-16px shadow-[0_10px_30px_#0000001a]">
 						<SiteStatus siteData={siteData} days={countDays} />
 					</div>
 				</div>

@@ -1,4 +1,3 @@
-import React from 'react';
 import CustomLink from '../components/customLink';
 import Package from '../../package.json';
 
@@ -10,31 +9,33 @@ const Footer = () => {
 	const copyrnu = import.meta.env.VITE_COPYR_NAME_URL;
 
 	return (
-		<footer id="footer">
-			<div className="text">
+		<footer id="footer" className="flex flex-col items-center mt-2">
+			<div className="text-center text-13px leading-26px text-secondary">
 				<p>
 					<CustomLink to="https://github.com/bilirumble/upzilla" title="UptimeRobot">
 						Upzilla
 					</CustomLink>
-					&nbsp;v&nbsp;{Package.version},&nbsp;Based on&nbsp;
+					<span className="mx-1">v{Package.version},</span>
+					<span className="mx-1">Based on</span>
 					<CustomLink to="https://uptimerobot.com/" title="UptimeRobot">
 						UptimeRobot
 					</CustomLink>
 				</p>
 				<p>
-					Copyright&nbsp;&copy;&nbsp;{copyry}&nbsp;-&nbsp;{new Date().getFullYear()}
-					&nbsp;
+					<span className="mx-1">
+						Copyright © {copyry} - {new Date().getFullYear()}
+					</span>
 					<CustomLink to={copyrnu} title={copyrn}>
 						{copyrn}
 					</CustomLink>
-					{siteIcp ? (
-						<React.Fragment>
-							&nbsp;|&nbsp;
+					{siteIcp && (
+						<>
+							<span className="mx-1">|</span>
 							<CustomLink to="https://beian.miit.gov.cn/" title={siteIcp}>
 								{siteIcp}
 							</CustomLink>
-						</React.Fragment>
-					) : null}
+						</>
+					)}
 				</p>
 			</div>
 		</footer>

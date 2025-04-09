@@ -39,6 +39,7 @@ module.exports = {
 		'selector-class-pattern': null, // 强制选择器类名的格式
 		'value-no-vendor-prefix': null, // 关闭 vendor-prefix(为了解决多行省略 -webkit-box)
 		'at-rule-no-unknown': null,
+		"custom-property-pattern": null,
 		'selector-pseudo-class-no-unknown': [
 			true,
 			{

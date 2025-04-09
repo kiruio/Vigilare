@@ -4,6 +4,8 @@ interface CustomLinkProps {
 	to: string;
 	title: string;
 	children?: React.ReactNode;
+	style?: React.CSSProperties;
+	className?: string;
 }
 
 const CustomLink = (props: CustomLinkProps) => {
@@ -16,7 +18,14 @@ const CustomLink = (props: CustomLinkProps) => {
 			: `//${props.to}`;
 
 	return (
-		<a className="link" title={props.title} href={url} target="_blank" rel="noreferrer">
+		<a
+			className={`text-secondary hover:text-primary font-bold transition-colors duration-300 ${props.className}`}
+			style={props.style}
+			title={props.title}
+			href={url}
+			target="_blank"
+			rel="noreferrer"
+		>
 			{props.children}
 		</a>
 	);

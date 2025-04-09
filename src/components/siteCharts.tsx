@@ -128,17 +128,32 @@ const SiteCharts = ({ siteDetails }: { siteDetails: SiteDetails }) => {
 	};
 
 	return (
-		<div className="site-details">
+		<div className="p-4">
 			{siteDetails.status !== 'ok' ? (
 				siteDetails.average >= 70 ? (
-					<Alert message="当前站点出现异常，请检查站点状态" type="warning" showIcon />
+					<Alert
+						message="当前站点出现异常，请检查站点状态"
+						type="warning"
+						showIcon
+						className="mb-4"
+					/>
 				) : (
-					<Alert message="当前站点持续异常，请立即处理" type="error" showIcon />
+					<Alert
+						message="当前站点持续异常，请立即处理"
+						type="error"
+						showIcon
+						className="mb-4"
+					/>
 				)
 			) : (
-				<Alert message="当前站点状态正常，请继续保持哦" type="success" showIcon />
+				<Alert
+					message="当前站点状态正常，请继续保持哦"
+					type="success"
+					showIcon
+					className="mb-4"
+				/>
 			)}
-			<div className="all" style={{ height: 400 }}>
+			<div className="h-400px">
 				<ResponsiveContainer width="100%" height="100%">
 					<LineChart data={chartData}>
 						<CartesianGrid strokeDasharray="3 3" />
