@@ -1,7 +1,6 @@
-/* eslint-env node */
-
 module.exports = {
   env: { browser: true, es2020: true },
+  parser: '@typescript-eslint/parser',
   extends: [
     "eslint:recommended",
     "plugin:react/recommended",
@@ -16,7 +15,5 @@ module.exports = {
       "warn",
       { allowConstantExport: true },
     ],
-    // 添加装饰器相关的配置
-    "babel/decorators": "error",
   },
 };

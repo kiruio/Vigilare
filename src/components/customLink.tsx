@@ -1,21 +1,25 @@
-// 超链接组件
-const CustomLink = (props: any) => {
-  const { text, to, iconDom } = props;
+import React from 'react';
 
-  // 检查链接
-  const url =
-    to.startsWith("http://") ||
-    to.startsWith("https://") ||
-    to.startsWith("mailto")
-      ? to
-      : `//${to}`;
+interface CustomLinkProps {
+	to: string;
+	title: string;
+	children?: React.ReactNode;
+}
 
-  return (
-    <a className="link" title={text} href={url} target="_blank">
-      {iconDom}
-      {text}
-    </a>
-  );
+const CustomLink = (props: CustomLinkProps) => {
+	// 检查链接
+	const url =
+		props.to.startsWith('http://') ||
+		props.to.startsWith('https://') ||
+		props.to.startsWith('mailto')
+			? props.to
+			: `//${props.to}`;
+
+	return (
+		<a className="link" title={props.title} href={url} target="_blank" rel="noreferrer">
+			{props.children}
+		</a>
+	);
 };
 
 export default CustomLink;
