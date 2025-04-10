@@ -51,9 +51,12 @@ export default ({ mode }: { mode: string }) =>
 					],
 				},
 			}),
-			// viteCompression
-			viteCompression(),
 			UnoCSS(),
+			viteCompression({
+				algorithm: 'brotliCompress',
+				ext: '.br',
+				deleteOriginFile: true,
+			}),
 		],
 		resolve: {
 			alias: {
@@ -75,11 +78,13 @@ export default ({ mode }: { mode: string }) =>
 					passes: 3, // 增加压缩次数
 				},
 			},
-			sourcemap: true,
+			sourcemap: false,
 			rollupOptions: {
 				output: {
 					manualChunks(id) {
 						if (id.includes('node_modules')) {
+							if (id.includes('antd')) return 'antd';
+							if (id.includes('react')) return 'react';
 							return 'vendor';
 						}
 
