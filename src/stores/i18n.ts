@@ -22,7 +22,7 @@ interface I18nState {
 export const useI18nStore = create(
 	persist<I18nState>(
 		(set, get) => ({
-			lang: 'en',
+			lang: navigator.language.startsWith('zh') ? 'zh' : 'en',
 			setLang: (lang) => set({ lang }),
 			t: (key) => {
 				const keys = key.split('.');
@@ -38,7 +38,6 @@ export const useI18nStore = create(
 		}),
 		{
 			name: 'i18n-store',
-			partialize: (state) => ({ lang: state.lang }),
 		}
 	)
 );
