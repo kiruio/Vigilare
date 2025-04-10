@@ -53,9 +53,9 @@ export default ({ mode }: { mode: string }) =>
 			}),
 			UnoCSS(),
 			viteCompression({
-				algorithm: 'brotliCompress',
-				ext: '.br',
-				deleteOriginFile: true,
+				algorithm: 'gzip',
+				ext: '.gz',
+				deleteOriginFile: false,
 			}),
 		],
 		resolve: {

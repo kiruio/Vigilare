@@ -1,7 +1,9 @@
 # Upzilla
+
 简洁的UptimeRobot页面
 
 ## 部署
+
 ### 安装依赖
 
 ```bash
@@ -28,12 +30,16 @@ pnpm build
 
 ## 事先准备
 
-- 您需要先到 [UptimeRobot](https://uptimerobot.com/ "UptimeRobot") 添加站点监控，并在 My Settings 页面获取 API Key
+- 您需要先到 [UptimeRobot](https://uptimerobot.com/ 'UptimeRobot') 添加站点监控，并在 My Settings 页面获取 API Key
 - 您需要拥有一个网站空间，常见的 Nginx / PHP 等空间即可，甚至是阿里云的 OSS 等纯静态空间也行，也可以使用 `Vercel` 或者 `Cloudflare` 直接部署该项目。
 
 ## 如何部署：
+
 - 所有配置均位于.env文件内
 - 将所有文件上传到网站空间
 
+请注意, 本项目默认使用brotliCompress进行压缩，若您使用的是不支持brotli的静态空间(如Github Pages)，请将`vite.config.ts`内的`deleteOriginFile`改为`false`!
+
 ## 鸣谢
- - [site-status](https://github.com/imsyy/site-status) 基于此项目进行修改
+
+- [site-status](https://github.com/imsyy/site-status) 基于此项目进行修改
