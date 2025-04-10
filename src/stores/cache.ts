@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { MonitorData } from '../utils/getSiteData';
+import { MonitorData } from '../model';
 
 interface Cache {
 	data: MonitorData | null;

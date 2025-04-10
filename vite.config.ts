@@ -75,6 +75,17 @@ export default ({ mode }: { mode: string }) =>
 					passes: 3, // 增加压缩次数
 				},
 			},
-			sourcemap: false,
+			sourcemap: true,
+			rollupOptions: {
+				output: {
+					manualChunks(id) {
+						if (id.includes('node_modules')) {
+							return 'vendor';
+						}
+
+						return null;
+					},
+				},
+			},
 		},
 	});

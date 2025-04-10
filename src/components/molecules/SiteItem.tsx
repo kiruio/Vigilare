@@ -56,7 +56,7 @@ const SiteItem: React.FC<SiteItemProps> = ({ site, onClick }) => {
 					<StatusIcon
 						color={site.status === 'ok' ? 'bg-normal' : 'bg-error'}
 						afterColor={site.status === 'ok' ? 'bg-normal' : 'bg-error'}
-						className="w-12px h-12px"
+						className="w-12px h-12px after:animate-duration-1s"
 					/>
 					<span className="hidden ml-8px sm:inline">
 						{site.status === 'ok' ? '正常访问' : '无法访问'}
