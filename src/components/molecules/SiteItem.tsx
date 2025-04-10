@@ -1,14 +1,13 @@
-// src/components/molecules/SiteItem.tsx
 import React from 'react';
 import Tag from '../atoms/Tag';
 import CustomLink from '../atoms/CustomLink';
 import StatusIcon from '../atoms/StatusIcon';
-import { LinkTwo } from '@icon-park/react';
 import Tooltip from 'antd/es/tooltip';
 import 'antd/es/tooltip/style';
 import StatusTooltip from './StatusTooltip';
 import { formatDuration, formatDurationToMinute } from '../../utils/timeTools';
 import { ProcessedData } from '../../model';
+import { useI18n } from '../../hooks/useLocales';
 
 interface SiteItemProps {
 	site: ProcessedData;
@@ -23,13 +22,15 @@ interface SiteTypeMap {
 }
 
 const SiteItem: React.FC<SiteItemProps> = ({ site, onClick }) => {
+	const { t } = useI18n();
+
 	const days = import.meta.env.VITE_COUNT_DAYS || 60;
 	const siteTypeMap: SiteTypeMap = {
-		1: { tag: 'HTTP', text: '发送 HTTP(S) 请求获取目标服务可用性' },
-		2: { tag: 'KEYWORD', text: '发送 HTTP(S) 请求并检查响应内容中是否包含指定关键词' },
-		3: { tag: 'PING', text: '发送 ICMP Echo 请求获取目标服务可用性' },
-		4: { tag: 'PORT', text: '检查目标服务端口是否开放' },
-		5: { tag: 'HEARTBEAT', text: '由被监控的服务主动发送心跳包获知其可用性' },
+		1: { tag: 'HTTP', text: t('card.type.HTTP') },
+		2: { tag: 'KEYWORD', text: t('card.type.KEYWORD') },
+		3: { tag: 'PING', text: t('card.type.PING') },
+		4: { tag: 'PORT', text: t('card.type.PORT') },
+		5: { tag: 'HEARTBEAT', text: t('card.type.HEARTBEAT') },
 	};
 
 	return (
@@ -43,12 +44,16 @@ const SiteItem: React.FC<SiteItemProps> = ({ site, onClick }) => {
 				<div>{site.name}</div>
 				<Tooltip title={<span>{siteTypeMap[site.type]?.text}</span>} destroyTooltipOnHide>
 					<Tag className="ml-8px text-9px opacity-90">
-						{siteTypeMap[site.type]?.tag || '未知'}/
+						{siteTypeMap[site.type]?.tag || t('common.unknown')}/
 						{formatDurationToMinute(site.interval)}
 					</Tag>
 				</Tooltip>
-				<CustomLink to={site.url} title={`访问 ${site.name}`}>
-					<LinkTwo className="text-#a0a0a0 hover:text-primary transition-color-300" />
+				<CustomLink
+					className="i-lucide-link-2"
+					to={site.url}
+					title={t('card.other.visit').replace('{name}', site.name)}
+				>
+					<></>
 				</CustomLink>
 				<div
 					className={`flex items-center ml-auto text-14px ${site.status === 'ok' ? 'text-normal' : 'text-error'}`}
@@ -59,7 +64,7 @@ const SiteItem: React.FC<SiteItemProps> = ({ site, onClick }) => {
 						className="w-12px h-12px after:animate-duration-1s"
 					/>
 					<span className="hidden ml-8px sm:inline">
-						{site.status === 'ok' ? '正常访问' : '无法访问'}
+						{site.status === 'ok' ? t('card.status.normal') : t('card.status.error')}
 					</span>
 				</div>
 			</div>
@@ -75,7 +80,15 @@ const SiteItem: React.FC<SiteItemProps> = ({ site, onClick }) => {
 					return (
 						<Tooltip
 							key={index}
-							title={<StatusTooltip date={time} status={status} />}
+							title={
+								<StatusTooltip
+									date={time}
+									status={status}
+									uptime={uptime}
+									downTimes={down.times}
+									duration={down.duration}
+								/>
+							}
 							destroyTooltipOnHide
 						>
 							<div
@@ -99,11 +112,17 @@ const SiteItem: React.FC<SiteItemProps> = ({ site, onClick }) => {
 			</div>
 
 			<div className="flex justify-between text-secondary text-13px">
-				<div className="hidden md:inline">今天</div>
+				<div className="hidden md:inline">{t('common.time.today')}</div>
 				<div>
 					{site.total.times
-						? `最近 ${days} 天内故障 ${site.total.times} 次，累计 ${formatDuration(site.total.duration)}，平均可用率 ${site.average}%`
-						: `最近 ${days} 天内可用率 ${site.average}%`}
+						? t('card.summary.error')
+								.replace('{days}', days)
+								.replace('{times}', site.total.times)
+								.replace('{duration}', formatDuration(site.total.duration))
+								.replace('{percent}', site.average.toString())
+						: t('card.summary.normal')
+								.replace('{days}', days)
+								.replace('{percent}', site.average.toString())}
 				</div>
 				<div className="hidden md:inline">
 					{site.daily[site.daily.length - 1].date.format('YYYY-MM-DD')}

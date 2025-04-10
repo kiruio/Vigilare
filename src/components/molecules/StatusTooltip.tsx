@@ -1,4 +1,5 @@
 import React from 'react';
+import { useI18n } from '../../hooks/useLocales';
 
 interface StatusTooltipProps {
 	date: string;
@@ -15,10 +16,14 @@ const StatusTooltip: React.FC<StatusTooltipProps> = ({
 	downTimes,
 	duration,
 }) => {
+	const { t } = useI18n();
 	const statusText = {
-		normal: `可用率 ${uptime}%`,
-		error: `故障 ${downTimes} 次，累计 ${duration}，可用率 ${uptime}%`,
-		none: '无数据',
+		normal: t('card.detail.normal').replace('{percent}', uptime!.toString()),
+		error: t('card.detail.error')
+			.replace('{times}', downTimes!.toString())
+			.replace('{duration}', duration!)
+			.replace('{percent}', uptime!.toString()), //`故障 ${downTimes} 次，累计 ${duration}，可用率 ${uptime}%`,
+		none: t('card.detail.unknown'),
 	}[status];
 
 	return (

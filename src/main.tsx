@@ -2,8 +2,8 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
 import '@/style/index.less';
-import '@icon-park/react/styles/index.css';
-import 'virtual:uno.css'; // 引入unocss
+import 'virtual:uno.css';
+import 'uno.css';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
 	<React.StrictMode>

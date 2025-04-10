@@ -12,6 +12,7 @@ import {
 import dayjs from 'dayjs';
 import { ProcessedData } from '../../model';
 import React from 'react';
+import { useI18n } from '../../hooks/useLocales';
 
 // 合并阈值
 const MERGE_THRESHOLD = 5;
@@ -20,6 +21,8 @@ interface SiteChartsProps {
 }
 
 const SiteCharts: React.FC<SiteChartsProps> = ({ siteDetails }) => {
+	const { t } = useI18n();
+
 	const processData = (daily: ProcessedData['daily']) => {
 		if (!daily || daily.length === 0) return [];
 
@@ -128,26 +131,21 @@ const SiteCharts: React.FC<SiteChartsProps> = ({ siteDetails }) => {
 			{siteDetails.status !== 'ok' ? (
 				siteDetails.average >= 70 ? (
 					<Alert
-						message="当前站点出现异常，请检查站点状态"
+						message={t('card.charts.warning')}
 						type="warning"
 						showIcon
 						className="mb-4"
 					/>
 				) : (
 					<Alert
-						message="当前站点持续异常，请立即处理"
+						message={t('card.charts.error')}
 						type="error"
 						showIcon
 						className="mb-4"
 					/>
 				)
 			) : (
-				<Alert
-					message="当前站点状态正常，请继续保持哦"
-					type="success"
-					showIcon
-					className="mb-4"
-				/>
+				<Alert message={t('card.charts.normal')} type="success" showIcon className="mb-4" />
 			)}
 			<div className="h-400px">
 				<ResponsiveContainer width="100%" height="100%">
@@ -160,8 +158,10 @@ const SiteCharts: React.FC<SiteChartsProps> = ({ siteDetails }) => {
 						/>
 						<YAxis tickFormatter={(v) => `${v}%`} domain={[0, 100]} />
 						<Tooltip
-							formatter={(value: number) => [`${value}%`, '可用率']}
-							labelFormatter={(label) => `日期: ${label}`}
+							formatter={(value: number) => [`${value}%`, t('card.charts.percent')]}
+							labelFormatter={(label) =>
+								`${t('card.charts.date').replace('{date}', label)}`
+							}
 						/>
 						<Line
 							type="monotone"

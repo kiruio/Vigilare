@@ -1,18 +1,23 @@
 import React, { useState } from 'react';
 import { CSSTransition, SwitchTransition } from 'react-transition-group';
-import { Refresh } from '@icon-park/react';
 import message from 'antd/es/message';
 import 'antd/es/message/style';
+import Dropdown from 'antd/es/dropdown';
+import 'antd/es/dropdown/style';
 import { useStatusStore } from '../../stores/status';
 import { useCacheStore } from '../../stores/cache';
 import { formatTimestamp } from '../../utils/timeTools';
 import StatusIcon from '../atoms/StatusIcon';
 import { getSiteData } from '../../utils/getSiteData';
 import SiteOverview from '../molecules/SiteOverview';
+import { useI18n } from '../../hooks/useLocales';
+import { MenuProps } from 'antd';
 
 interface HeaderProps {}
 
 const Header: React.FC<HeaderProps> = () => {
+	const { t, setLang } = useI18n();
+
 	const [messageApi, contextHolder] = message.useMessage();
 	const [lastClickTime, setLastClickTime] = useState(0);
 	const { siteState } = useStatusStore();
@@ -23,11 +28,11 @@ const Header: React.FC<HeaderProps> = () => {
 
 	// 状态文本
 	const statusNames: Record<string, string> = {
-		loading: '站点状态加载中',
-		error: '部分站点出现异常',
-		allError: '全部站点出现异常',
-		normal: '所有站点运行正常',
-		wrong: '数据请求失败',
+		loading: t('header.summary.loading'),
+		error: t('header.summary.error'),
+		allError: t('header.summary.allError'),
+		normal: t('header.summary.normal'),
+		wrong: t('header.summary.wrong'),
 	};
 
 	const gradientColors = {
@@ -53,7 +58,7 @@ const Header: React.FC<HeaderProps> = () => {
 			messageApi.open({
 				key: 'updata',
 				type: 'warning',
-				content: '请稍后再尝试刷新',
+				content: t('common.tooFast'),
 			});
 			return false;
 		}
@@ -62,10 +67,25 @@ const Header: React.FC<HeaderProps> = () => {
 		setLastClickTime(currentTime);
 	};
 
+	const items: MenuProps['items'] = [
+		{
+			label: '简体中文',
+			key: 'zh',
+		},
+		{
+			label: 'English',
+			key: 'en',
+		},
+	];
+
+	const onClick: MenuProps['onClick'] = ({ key }) => {
+		setLang(key as 'zh' | 'en');
+	};
+
 	return (
 		<header
 			id="header"
-			className={`relative z-0 text-white box-border ${siteState}`}
+			className={`relative z-0 text-white box-border mb-1rem ${siteState}`}
 			style={{
 				background: `linear-gradient(to right, ${gradientColors[siteState] || '#00bbff, #0088ff'})`,
 				height: '360px',
@@ -76,6 +96,9 @@ const Header: React.FC<HeaderProps> = () => {
 			<div className="h-full flex flex-col box-border max-w-980px px-20px py-0 mx-auto my-0">
 				<div className="px-5 flex justify-between items-center">
 					<span className="text-xl font-bold">{siteName}</span>
+					<Dropdown menu={{ items, onClick }} trigger={['click']}>
+						<span className="i-lucide-languages" />
+					</Dropdown>
 				</div>
 
 				<div className="mx-5 mt-auto flex items-center max-sm:justify-center max-sm:h-full max-sm:mx-0 max-sm:mb-2px">
@@ -98,19 +121,22 @@ const Header: React.FC<HeaderProps> = () => {
 							<SwitchTransition mode="out-in">
 								<CSSTransition key={siteState} classNames="fade" timeout={300}>
 									{siteState === 'loading' ? (
-										<span>少女祈祷中...</span>
+										<span>{t('common.loading')}</span>
 									) : siteState === 'wrong' ? (
-										<span>出错啦(╯‵□′)╯︵┻━┻</span>
+										<span>{t('common.wrong')}(╯‵□′)╯︵┻━┻</span>
 									) : (
 										<div className="flex items-center">
 											<span className="last-update">
-												{`上次更新于 ${formatTimestamp(siteData?.timestamp).justTime}`}
+												{t('header.update').replace(
+													'{time}',
+													formatTimestamp(siteData?.timestamp).justTime
+												)}
 												<span className="mx-2">|</span>
 											</span>
 											<div className="flex items-center">
-												<span>更新频率 5 分钟</span>
-												<Refresh
-													className="refresh cursor-pointer ml-1.5 hover:opacity-80 transition-opacity"
+												<span>{t('header.updateAt')}</span>
+												<span
+													className="i-lucide-refresh-cw cursor-pointer ml-1.5 hover:opacity-80 transition-opacity"
 													onClick={refreshStatus}
 												/>
 											</div>

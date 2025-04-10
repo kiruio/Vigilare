@@ -1,3 +1,7 @@
+import { useI18nStore } from '../stores/i18n';
+
+const { t } = useI18nStore.getState();
+
 /**
  * 格式化数字，保留两位小数
  * @param {number} value - 要格式化的数字
@@ -18,9 +22,9 @@ export const formatDuration = (seconds: number) => {
 	const s = seconds % 60;
 
 	const parts = [];
-	if (h > 0) parts.push(`${h} 小时`);
-	if (m > 0) parts.push(`${m} 分`);
-	if (s > 0) parts.push(`${s} 秒`);
+	if (h > 0) parts.push(`${h} ${t('common.time.hour')}`);
+	if (m > 0) parts.push(`${m} ${t('common.time.minute')}`);
+	if (s > 0) parts.push(`${s} ${t('common.time.second')}`);
 
 	return parts.join(' ');
 };
