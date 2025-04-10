@@ -10,21 +10,17 @@ import {
 	ResponsiveContainer,
 } from 'recharts';
 import dayjs from 'dayjs';
-
-interface SiteDetails {
-	status: string;
-	average: number;
-	daily: Array<{
-		uptime: number;
-		date: any;
-	}>;
-}
+import { ProcessedData } from '../../model';
+import React from 'react';
 
 // 合并阈值
 const MERGE_THRESHOLD = 5;
+interface SiteChartsProps {
+	siteDetails: ProcessedData;
+}
 
-const SiteCharts = ({ siteDetails }: { siteDetails: SiteDetails }) => {
-	const processData = (daily: SiteDetails['daily']) => {
+const SiteCharts: React.FC<SiteChartsProps> = ({ siteDetails }) => {
+	const processData = (daily: ProcessedData['daily']) => {
 		if (!daily || daily.length === 0) return [];
 
 		const sorted = [...daily]

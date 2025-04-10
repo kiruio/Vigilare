@@ -3,51 +3,11 @@ import dayjs from 'dayjs';
 import { useCacheStore } from '../stores/cache';
 import { useStatusStore } from '../stores/status';
 import { formatNumber } from './timeTools';
+import { ProcessedData, RequsetPayload, ResponseData } from '../model';
 
-// 定义类型
-interface RequsetPayload {
-	api_key: string;
-	format: string;
-	logs: number;
-	log_types: string;
-	logs_start_date: number;
-	logs_end_date: number;
-	custom_uptime_ranges: string;
-}
-
-interface ResponseData {
-	monitors: MonitorData[];
-	pagination: {
-		total: number;
-		page: number;
-		per_page: number;
-	};
-}
-
-export interface MonitorData {
-	id: string;
-	friendly_name: string;
-	url: string;
-	type: number;
-	interval: number;
-	status: number;
-	logs: any[];
-	custom_uptime_ranges: string;
-}
-
-interface ProcessedData {
-	id: string;
-	name: string;
-	url: string;
-	type: number;
-	interval: number;
-	average: string;
-	daily: any[];
-	total: any;
-	status: string;
-}
-
-export const getSiteData = async (apikey: string, days: number) => {
+export const getSiteData = async () => {
+	const apikey = import.meta.env.VITE_API_KEY;
+	const days = import.meta.env.VITE_COUNT_DAYS || 60;
 	const { changeSiteData, siteData } = useCacheStore.getState();
 	const { changeSiteState } = useStatusStore.getState();
 
@@ -112,7 +72,7 @@ export const getSiteData = async (apikey: string, days: number) => {
  * @param {Array} dates - 日期数组
  * @returns {Array} - 处理后的数据
  */
-const dataProcessing = (data: any, dates: any) => {
+const dataProcessing = (data: any, dates: any): ProcessedData[] => {
 	return data?.map((monitor: any) => {
 		const ranges = monitor.custom_uptime_ranges.split('-');
 		const average = formatNumber(ranges.pop());
@@ -150,7 +110,7 @@ const dataProcessing = (data: any, dates: any) => {
 			duration: 0,
 		});
 
-		const result = {
+		const result: ProcessedData = {
 			id: monitor.id,
 			name: monitor.friendly_name,
 			type: monitor.type,
@@ -171,7 +131,7 @@ const dataProcessing = (data: any, dates: any) => {
 
 // 状态更新函数
 const updateSiteStatus = (data: ProcessedData[]) => {
-	const { changeSiteState, changeSiteOverview } = useStatusStore.getState();
+	const { changeSiteDatas, changeSiteState, changeSiteOverview } = useStatusStore.getState();
 
 	try {
 		const okCount = data.filter((d) => d.status === 'ok').length;
@@ -193,6 +153,8 @@ const updateSiteStatus = (data: ProcessedData[]) => {
 			okCount,
 			downCount,
 		});
+
+		changeSiteDatas(data);
 	} catch (error) {
 		console.error('状态更新失败:', error);
 		changeSiteState('error');

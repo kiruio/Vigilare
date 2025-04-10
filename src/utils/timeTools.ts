@@ -4,7 +4,7 @@
  * @returns {string} - 格式化后的字符串
  */
 export const formatNumber = (value: number) => {
-	return (Math.floor(value * 100) / 100).toString();
+	return Math.floor(value * 100) / 100;
 };
 
 /**

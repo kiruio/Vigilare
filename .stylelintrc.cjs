@@ -12,14 +12,6 @@ module.exports = {
 
 	plugins: ['stylelint-less', 'stylelint-prettier'], // 配置stylelint less拓展插件
 
-	// overrides: [
-	//   // 若项目中存在less文件，添加以下配置
-	//   {
-	//     files: ['*.less', '**/*.less'],
-	//     customSyntax: 'postcss-less',
-	//   },
-	// ],
-
 	/* 自定义规则 */
 	rules: {
 		indentation: null, // 指定缩进空格

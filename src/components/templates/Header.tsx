@@ -1,16 +1,21 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { CSSTransition, SwitchTransition } from 'react-transition-group';
 import { Refresh } from '@icon-park/react';
 import message from 'antd/es/message';
 import 'antd/es/message/style';
-import { useStatusStore } from '../stores/status';
-import { useCacheStore } from '../stores/cache';
-import { formatTimestamp } from '../utils/timeTools';
+import { useStatusStore } from '../../stores/status';
+import { useCacheStore } from '../../stores/cache';
+import { formatTimestamp } from '../../utils/timeTools';
+import StatusIcon from '../atoms/StatusIcon';
+import { getSiteData } from '../../utils/getSiteData';
+import SiteOverview from '../molecules/SiteOverview';
 
-const Header = ({ getSiteData }: { getSiteData: () => void }) => {
+interface HeaderProps {}
+
+const Header: React.FC<HeaderProps> = () => {
 	const [messageApi, contextHolder] = message.useMessage();
 	const [lastClickTime, setLastClickTime] = useState(0);
-	const { siteState, siteOverview } = useStatusStore();
+	const { siteState } = useStatusStore();
 	const { siteData, changeSiteData } = useCacheStore();
 
 	// 加载配置
@@ -31,6 +36,14 @@ const Header = ({ getSiteData }: { getSiteData: () => void }) => {
 		allError: '#ee5555, #ff2b2b',
 		wrong: '#ee5555, #ff2b2b',
 		normal: '#4fd69c, #24a66e',
+	};
+
+	const iconColor = {
+		normal: 'bg-normal',
+		error: 'bg-error',
+		allError: 'bg-allErrors',
+		wrong: 'bg-wrong',
+		loading: 'bg-loading',
 	};
 
 	// 刷新状态
@@ -66,22 +79,10 @@ const Header = ({ getSiteData }: { getSiteData: () => void }) => {
 				</div>
 
 				<div className="mx-5 mt-auto flex items-center max-sm:justify-center max-sm:h-full max-sm:mx-0 max-sm:mb-2px">
-					<div
-						className={`w-10 h-10 min-w-10 mr-6 bg-white rounded-full relative
-	max-md:w-30px max-md:min-w-30px max-md:h-30px
-	max-md:after:w-30px max-md:after:w-30px
-    max-sm:hidden                         // 420px 隐藏
-    after:content-empty after:absolute after:inset-0 after:rounded-full 
-    after:animate-breathing after:animate-duration-2s after:animate-iteration-infinite
-					${
-						{
-							normal: 'after:bg-normal',
-							error: 'after:bg-error',
-							allError: 'after:bg-allErrors',
-							wrong: 'after:bg-wrong',
-							loading: 'after:bg-loading',
-						}[siteState]
-					}`}
+					<StatusIcon
+						color="bg-white"
+						afterColor={iconColor[siteState]}
+						className="w-10 h-10 min-w-10 mr-6 max-md:w-30px max-md:min-w-30px max-md:h-30px max-md:after:w-30px max-md:after:w-30px max-sm:hidden"
 					/>
 
 					<div className="r-text flex flex-col min-w-0">
@@ -120,24 +121,7 @@ const Header = ({ getSiteData }: { getSiteData: () => void }) => {
 						</div>
 					</div>
 
-					<div
-						className={`overview hidden md:flex flex-col items-end ml-auto max-md:hidden ${siteState === 'loading' || siteState === 'wrong' ? 'opacity-0' : ''} transition-opacity duration-300`}
-					>
-						<div className="count opacity-80 mb-1">
-							<span className="name">站点总数</span>
-							<span className="num text-lg ml-1">{siteOverview?.count}</span>
-						</div>
-						<div className="status-num flex text-xl">
-							<div className="ok-count flex items-center after:content-['/'] after:ml-6px after:mr-6px after:text-16px">
-								<span className="name">正常</span>
-								<span className="num ml-1">{siteOverview?.okCount}</span>
-							</div>
-							<div className="down-count flex items-center">
-								<span className="name">异常</span>
-								<span className="num ml-1">{siteOverview?.downCount}</span>
-							</div>
-						</div>
-					</div>
+					<SiteOverview />
 				</div>
 			</div>
 		</header>

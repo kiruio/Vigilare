@@ -44,7 +44,7 @@ export default ({ mode }: { mode: string }) =>
 					background_color: '#efefef',
 					icons: [
 						{
-							src: '/images/favicon.png',
+							src: '/favicon.ico',
 							sizes: '144x144',
 							type: 'image/png',
 						},

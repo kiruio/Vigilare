@@ -1,8 +1,10 @@
-import CustomLink from '../components/customLink';
-import Package from '../../package.json';
+import CustomLink from '../atoms/CustomLink';
+import Package from '../../../package.json';
+import React from 'react';
 
-const Footer = () => {
-	// 加载配置
+interface FooterProps {}
+
+const Footer: React.FC<FooterProps> = () => {
 	const siteIcp = import.meta.env.VITE_SITE_ICP;
 	const copyry = import.meta.env.VITE_COPYR_STARTYEAR;
 	const copyrn = import.meta.env.VITE_COPYR_NAME;
@@ -12,8 +14,8 @@ const Footer = () => {
 		<footer id="footer" className="flex flex-col items-center mt-2">
 			<div className="text-center text-13px leading-26px text-secondary">
 				<p>
-					<CustomLink to="https://github.com/bilirumble/upzilla" title="UptimeRobot">
-						Upzilla
+					<CustomLink to="https://github.com/bilirumble/vigilare" title="Vigilare">
+						Vigilare
 					</CustomLink>
 					<span className="mx-1">v{Package.version},</span>
 					<span className="mx-1">Based on</span>
